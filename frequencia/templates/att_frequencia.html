@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'alunos/css/alunos.css' %}">
+    <link rel="stylesheet" href="{% static 'frequencia/css/frequencia.css' %}">
+{% endblock %}
+
+{% block 'dashboard' %}
+
+<div class="container">
+  <form method="POST">{% csrf_token %}
+  <h1 class="text-center">Lista de Alunos:</h1>
+    
+  Id do lançamento: {{id}}<br>
+  Data: {{controle.dados.data}}<br>
+  Turma: {{controle.dados.id_turma}} - {{alunos.turma.nome}}
+ 
+   
+  <hr style="background-color:gray;">
+  <div id="exibe_alunos" class="adicionar-aluno">
+    <table class="table table-hover">
+        <tr>
+            <td scope="col">#</td>
+            <td scope="col">Nome</td>
+            <td scope="col">Presença</td>
+        </tr>
+      {% for list_aluno in alunos.alunos %}
+      
+            <tbody>
+                <tr>
+                    <td>{{list_aluno.id}} </td>
+                    <td>{{list_aluno.nome}}</td>
+                    {%if up_tabela == 0 %}
+                    <td>
+                      <label for="presenca">
+                      <select class="form-control" id="presenca" name="presenca"value="{{list_aluno.presentes}}">
+                          <option value = "1">Sim</option>        
+                          <option value = "0">Não</option>
+                      </select>
+                      </label>
+                    </td>
+                    {%endif%}
+                                      
+                    {% for presentes in alunos.presentes %}
+                    {% if presentes.id_aluno == list_aluno.id and presentes.presenca == True%}
+                      
+                    <td>
+                      <label for="presenca">
+                        <select class="form-control" id="presenca" name="presenca">
+                          <option value = "{{presentes.presenca}}">Sim</option>        
+                          <option value = "0">Não</option>
+                        </select>
+                       </label>
+                    </td>
+                    <td><input type="hidden" id="presenca1" name= "presenca1" value="True" style="display:none"></td>  
+                    <td><input type="hidden" id="id_presenca" name= "id_presenca" value="{{presentes.id}}" style="display:none"></td>
+                    {%elif presentes.id_aluno == list_aluno.id and presentes.presenca == False %}
+                    <td>
+                      <label for="presenca">
+                        <select class="form-control" id="presenca" name="presenca">
+                                 
+                          <option value = "{{presentes.presenca}}">Não</option>
+                          <option value = "1">Sim</option> 
+                        </select>
+                      </label>
+                    </td>
+                    <td><input type="hidden" id="presenca1" name= "presenca1" value="False" style="display:none"></td>
+                    <td><input type="hidden" id="id_presenca" name= "id_presenca" value="{{presentes.id}}" style="display:none"></td>
+
+                    {%endif%}
+                    {%endfor%}
+                    <td><input type="hidden" id="id" name= "id" value="{{list_aluno.id}}" style="display:none"></td>
+                    <td><input type="hidden" id="data" name= "data" value="{{controle.dados.data}}" style="display:none"></td>
+                    <td><input type="hidden" id="turma" name= "turma" value="{{controle.dados.id_turma}}" style="display:none"></td>
+                    <td><input type="hidden" id="id_controle" name= "id_controle" value="{{id}}" style="display:none"></td>
+                </tr>
+
+
+            </tbody>
+      
+      {%endfor%}
+    </table>
+    <hr style="background-color:gray;">
+    <input type="hidden" id="atualiza_s_n" name= "atualiza_s_n" value="{{up_tabela}}" style="display:none">
+    <input type="submit" value="salvar" class="btn btn-success" > 
+  </form>
+</div>
+  
+
+
+  
+
+</div>
+<script src="{% static 'frequencia/js/frequencia.js' %}"></script>
+
+{% endblock%}

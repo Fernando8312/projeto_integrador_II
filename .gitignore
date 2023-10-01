@@ -1,0 +1,10 @@
+*.pyc
+*~
+__pycache__
+handvida-env
+db.sqlite3
+dados.csv
+dados1.csv
+Form_login
+
+
