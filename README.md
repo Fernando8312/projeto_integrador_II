@@ -21,3 +21,5 @@ Exemplo:
 6. python manage.py migrate
 7. python manage.py createsuperuser
 8. python manage.py runserver
+
+![HandVida](https://github.com/Fernando8312/projeto_integrador_II/blob/main/Telas/HandVida_telas.gif)
