@@ -1,19 +1,31 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
 from .models import Turmas
-import re
-from django.core import serializers
-import json
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 @login_required
 def turmas(request):
     if request.method == "GET":
+        #parametros para o paginador    
+        parametro_page = request.GET.get('page','1')
+        parametro_limit = request.GET.get('limit','10')
+
+        if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+            parametro_limit = '10'
+
+        turma_paginator = Paginator(Turmas.objects.all(), parametro_limit)
+
+        try:
+            page = turma_paginator.page(parametro_page)
+        except (EmptyPage, PageNotAnInteger):
+            page = turma_paginator.page(1)
+
+        #passar dados para a pagina
         lista_turmas = {
-                'lista_turmas':Turmas.objects.all()
+                'lista_turmas': page
             }
         print(lista_turmas)
         return render(request,'turmas.html', lista_turmas)
@@ -31,8 +43,23 @@ def turmas(request):
 
         )
         turma.save()
+        #paginador    
+        parametro_page = request.GET.get('page','1')
+        parametro_limit = request.GET.get('limit','10')
+
+        if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+            parametro_limit = '10'
+
+        turma_paginator = Paginator(Turmas.objects.all(), parametro_limit)
+
+        try:
+            page = turma_paginator.page(parametro_page)
+        except (EmptyPage, PageNotAnInteger):
+            page = turma_paginator.page(1)
+
+        #passar dados para a pagina
         lista_turmas = {
-            'lista_turmas':Turmas.objects.all()
+                'lista_turmas': page
             }
         return render(request,'turmas.html', lista_turmas)
     

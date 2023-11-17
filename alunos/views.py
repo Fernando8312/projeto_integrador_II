@@ -9,29 +9,57 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def alunos(request):
     if request.method == "GET":
         lista_turmas = Turmas.objects.all()
         print(lista_turmas)
+        
+        #parametros para o paginador    
+        parametro_page = request.GET.get('page','1')
+        parametro_limit = request.GET.get('limit','10')
+
+        if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+            parametro_limit = '10'
+
+                
+        #campo de pesquisa
         txt_pesquisa = request.GET.get('Pesquisa_Nome')
         if txt_pesquisa:
             print(txt_pesquisa)
+
+            alunos_paginador = Paginator(Alunos.objects.filter(nome__icontains=txt_pesquisa), parametro_limit)
+
+            try:
+                page = alunos_paginador.page(parametro_page)
+            except (EmptyPage, PageNotAnInteger):
+                page = alunos_paginador.page(1)
+
             lista_alunos = {
-                'lista_alunos':Alunos.objects.filter(nome__icontains=txt_pesquisa),
+                'lista_alunos':page,
                 'lista_turmas':lista_turmas, 
             }
             print(lista_alunos)
             return render(request,'alunos.html', lista_alunos)
         else:
-            print("nao tem dados")    
+            print("nao tem dados")
+
+            alunos_paginador = Paginator(Alunos.objects.all(), parametro_limit)
+
+            try:
+                page = alunos_paginador.page(parametro_page)
+            except (EmptyPage, PageNotAnInteger):
+                page = alunos_paginador.page(1)    
             lista_alunos = {
-                'lista_alunos':Alunos.objects.all(),
+                'lista_alunos':page,
                 'lista_turmas':lista_turmas,                
             }
             print(lista_alunos)
             return render(request,'alunos.html', lista_alunos)
+        
+
     elif request.method == "POST":
         nome = request.POST.get('Nome')
         responsavel = request.POST.get('Responsavel')
@@ -80,8 +108,24 @@ def alunos(request):
         )
     
         aluno.save()
+
+        #paginador
+        #parametros para o paginador    
+        parametro_page = request.GET.get('page','1')
+        parametro_limit = request.GET.get('limit','10')
+
+        if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+            parametro_limit = '10'
+
+        alunos_paginador = Paginator(Alunos.objects.all(), parametro_limit)
+
+        try:
+            page = alunos_paginador.page(parametro_page)
+        except (EmptyPage, PageNotAnInteger):
+            page = alunos_paginador.page(1)     
+
         lista_alunos = {
-            'lista_alunos':Alunos.objects.all(),
+            'lista_alunos':page,
             'lista_turmas':Turmas.objects.all(), 
             }
         return render(request,'alunos.html', lista_alunos)
@@ -139,7 +183,7 @@ def update_aluno(request, id):
         aluno.save()
         
 
-        return  JsonResponse({'status': '200', 'nome': nome, 'responsavel': responsavel, 'genero': genero, 'cpf': cpf, 'rg' : rg, 'situacao' : situacao, 'turma' : turma, 'endereco' : endereco,'numero': numero, 'bairro': bairro, 'cep' :cep, 'cidade': cidade, 'uf' : uf, 'email' : email, 'telefone' : telefone, 'obs' : obs})
+        return JsonResponse({'status': '200', 'nome': nome, 'responsavel': responsavel, 'genero': genero, 'cpf': cpf, 'rg' : rg, 'situacao' : situacao, 'turma' : turma, 'endereco' : endereco,'numero': numero, 'bairro': bairro, 'cep' :cep, 'cidade': cidade, 'uf' : uf, 'email' : email, 'telefone' : telefone, 'obs' : obs})
         
     
     except:

@@ -1,10 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
 from .models import Frequencia
 from turmas.models import Turmas
 from alunos.models import Alunos
 from frequencia.models import Frequencia, Dia_aula
-import re
 from django.core import serializers
 import json
 from django.shortcuts import redirect, get_object_or_404
@@ -12,13 +10,30 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def frequencia(request):
     if request.method == "GET":
+
+        #parametros para o paginador    
+        parametro_page = request.GET.get('page','1')
+        parametro_limit = request.GET.get('limit','10')
+
+        if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+            parametro_limit = '10'
+
+        freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+        try:
+            page = freq_paginator.page(parametro_page)
+        except (EmptyPage, PageNotAnInteger):
+            page = freq_paginator.page(1)
+
+
         lista_frequencia = {
                 'lista_turmas':Turmas.objects.all(),
-                'lista_aulas': Dia_aula.objects.all(),
+                'lista_aulas': page,
                 
             }
         return render(request,'frequencia.html', lista_frequencia)
@@ -28,9 +43,24 @@ def frequencia(request):
 
         #verificacao se a data esta em branco
         if data_lancamento == "":
+        
+            #parametros para o paginador    
+            parametro_page = request.GET.get('page','1')
+            parametro_limit = request.GET.get('limit','10')
+
+            if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                parametro_limit = '10'
+
+            freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+            try:
+                page = freq_paginator.page(parametro_page)
+            except (EmptyPage, PageNotAnInteger):
+                page = freq_paginator.page(1) 
+            
             lista_frequencia = {
                 'lista_turmas':Turmas.objects.all(),
-                'lista_aulas': Dia_aula.objects.all(),
+                'lista_aulas': page,
                 
             }
             return render(request,'frequencia.html', lista_frequencia)
@@ -132,9 +162,24 @@ def att_frequencia(request, id):
 
 
         else:
+
+                        #parametros para o paginador    
+            parametro_page = request.GET.get('page','1')
+            parametro_limit = request.GET.get('limit','10')
+
+            if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                parametro_limit = '10'
+
+            freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+            try:
+                page = freq_paginator.page(parametro_page)
+            except (EmptyPage, PageNotAnInteger):
+                page = freq_paginator.page(1) 
+
             lista_frequencia = {
                 'lista_turmas':Turmas.objects.all(),
-                'lista_aulas': Dia_aula.objects.all(),
+                'lista_aulas': page,
                 
             }
             return render(request, 'frequencia.html', lista_frequencia)
@@ -178,11 +223,23 @@ def att_frequencia(request, id):
                 print("gravei os dados na tabela frequencia")
 
             
+                #parametros para o paginador    
+                parametro_page = request.GET.get('page','1')
+                parametro_limit = request.GET.get('limit','10')
 
+                if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                    parametro_limit = '10'
+
+                freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+                try:
+                    page = freq_paginator.page(parametro_page)
+                except (EmptyPage, PageNotAnInteger):
+                    page = freq_paginator.page(1) 
 
                 lista_frequencia = {
                     'lista_turmas':Turmas.objects.all(),
-                    'lista_aulas': Dia_aula.objects.all(),
+                    'lista_aulas': page,
 
                 }
                 return render(request,'frequencia.html', lista_frequencia)
@@ -190,9 +247,22 @@ def att_frequencia(request, id):
             except:
                 print("aconteceu um erro")
                 #Voltar para tela de escolha de data e turma
+                #parametros para o paginador    
+                parametro_page = request.GET.get('page','1')
+                parametro_limit = request.GET.get('limit','10')
+
+                if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                    parametro_limit = '10'
+
+                freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+                try:
+                    page = freq_paginator.page(parametro_page)
+                except (EmptyPage, PageNotAnInteger):
+                    page = freq_paginator.page(1) 
                 lista_frequencia = {
                 'lista_turmas':Turmas.objects.all(),
-                'lista_aulas': Dia_aula.objects.all(),
+                'lista_aulas': page,
                     
                 }
                 return render(request,'frequencia.html', lista_frequencia)
@@ -229,11 +299,23 @@ def att_frequencia(request, id):
                 print("gravei os dados na tabela frequencia")
 
             
+                #parametros para o paginador    
+                parametro_page = request.GET.get('page','1')
+                parametro_limit = request.GET.get('limit','10')
 
+                if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                    parametro_limit = '10'
+
+                freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+                try:
+                    page = freq_paginator.page(parametro_page)
+                except (EmptyPage, PageNotAnInteger):
+                    page = freq_paginator.page(1) 
 
                 lista_frequencia = {
                     'lista_turmas':Turmas.objects.all(),
-                    'lista_aulas': Dia_aula.objects.all(),
+                    'lista_aulas': page,
 
                 }
                 return render(request,'frequencia.html', lista_frequencia)
@@ -241,9 +323,23 @@ def att_frequencia(request, id):
             except:
                 print("aconteceu um erro")
                 #Voltar para tela de escolha de data e turma
+                #parametros para o paginador    
+                parametro_page = request.GET.get('page','1')
+                parametro_limit = request.GET.get('limit','10')
+
+                if not(parametro_limit.isdigit() and int(parametro_limit) > 0):
+                    parametro_limit = '10'
+
+                freq_paginator = Paginator(Dia_aula.objects.all(), parametro_limit)
+
+                try:
+                    page = freq_paginator.page(parametro_page)
+                except (EmptyPage, PageNotAnInteger):
+                    page = freq_paginator.page(1) 
+
                 lista_frequencia = {
                 'lista_turmas':Turmas.objects.all(),
-                'lista_aulas': Dia_aula.objects.all(),
+                'lista_aulas': page,
                     
                 }
                 return render(request,'frequencia.html', lista_frequencia)
